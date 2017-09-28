@@ -31,3 +31,7 @@ It picks each ROI, interpolates a line between the verticies, adds up all the in
 It also plots the regions over which the integration is done as a sanity check that you're calculating what you think you are.
 
 There is also a section at the end of `actinConservationWorkflow.m` that does something specific for the case where the lamellapodia recedes into the purse string. The total integral of intensity of the lamellapodia is calculated, and the integral of the purse string intensity (minus the first point) is found, to see if the increase in purse string intensity is attributable to the lamellapodia. This should be commented out if need be.
+
+DEPENDENCIES:
+llmFig.m (found in mtools repo)
+bresenham.m (found in mtools repo)
