@@ -1,15 +1,20 @@
 # Actin conservation in wound healing
 
+DEPENDENCIES:
+llmFig.m, bresenham.m (both found [here](https://github.com/dsseara/mtool))
+
 This repository contains functions to analyze the image intensity from kymographs of a wound healing experiment to assess where fluorescently labeled actin is flowing.
 
+### Before using the code
 Before using these functions, first create a kymograph along a slice of a wound healing movie using imageJ. After creating the kymograph, select the regions along which you want to measure the actin intensity. For example, these could include the lamellapodia over time, the purse string over time, the area behind the purse string over time, or whatever else you find interesting. Change the width of the line using `Edit>Options>Line Width` to get a rough idea of how wide an area each ROI will have to be. *If you have more than one ROI, make sure they all start at the same time*.
 
 Once you have the ROIs, save them using `File>Save As>XY Coordinates`. This saves a `.txt` file with the xy-coordinates of each vertex of the segmeented line you drew. 
 
+### Using the code
 To use these functions, first clone the repository:
 ```
 $ cd path/of/your/choosing/
-$ git clone https://github.com/dsseara/woundActinConservation
+$ git clone https://github.com/dsseara/wound-healing
 ```
 
 Next, open `actinConservationWorkflow.m`. In there, there is a list of variables that you must change to analyze the experiments you specifically want to. These include:
@@ -31,7 +36,3 @@ It picks each ROI, interpolates a line between the verticies, adds up all the in
 It also plots the regions over which the integration is done as a sanity check that you're calculating what you think you are.
 
 There is also a section at the end of `actinConservationWorkflow.m` that does something specific for the case where the lamellapodia recedes into the purse string. The total integral of intensity of the lamellapodia is calculated, and the integral of the purse string intensity (minus the first point) is found, to see if the increase in purse string intensity is attributable to the lamellapodia. This should be commented out if need be.
-
-DEPENDENCIES:
-llmFig.m (found in mtools repo)
-bresenham.m (found in mtools repo)
