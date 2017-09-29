@@ -1,6 +1,6 @@
 % Script for generating data on actin conservation in a kymograph.
-% Only change the variables in the first block of text surrounded by
-% the word "Change" to enter the names of the ROI files
+% Only change the variables in the blocks of text surrounded by
+% the word "Change"
 % Most of the variables go into the helper function integrateActinIntensity
 % See the documentation there for definitions of all the variables.
 %
@@ -15,32 +15,35 @@ clear, close all
 fnames = {'cellBodyROI_xyCoords.txt', 'purseStringROI_xyCoords.txt', 'lamellapodiaROI_xyCoords.txt'};
 imagefname = 'kymograph_500x500.tif';
 integrationWidths = [70, 20; 20, 20; 70, 50]; % found by trial and error to produce minimal overlap
-savestuff = false;
+savestuff = true;
 savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'lamellaIntegratedIntensity.txt'};
-conversions = 500 ./ [165, 32]; % 500 pixels per (165 cm, 32 frames), from kymograph tif stack
+pix2um = 165 / 500; % 165 um per 500 pixels
+pix2frames = 32 / 500; % 32 frames per 500 pixels
+pix2min = 32 * 5 / 500; % 5 mins per frame, 32 frames per 500 pixels
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
 kymo = imread(imagefname);
+[nrows, ncols] = size(kymo);
 
 %% 
-% Perform the integration
+% Get intensity over time for each cell part
 for ii = 1:numel(fnames)
-    [integratedIntensity{ii}, roiPoints{ii}] = integrateActinIntensity(fnames{ii}, kymo,...
-        integrationWidths(ii, :), savestuff, savefname{ii}, conversions);
+    [intensity{ii}, roiPoints{ii}] = actinIntensity(fnames{ii}, kymo,...
+        integrationWidths(ii, :), savestuff, savefname{ii}, [1/pix2um, 1/pix2frames]);
 end
 
-% Plot the integrated intensities
-colors = lines(numel(integratedIntensity));
+% Plot the intensities over time
+colors = lines(numel(intensity));
 
 figure, hold on;
-for ii = 1:numel(integratedIntensity)
-    plot((1:numel(integratedIntensity{ii}))./conversions(2),...
-         integratedIntensity{ii}, 'Color', colors(ii,:))
+for ii = 1:numel(intensity)
+    plot((1:numel(intensity{ii})).*pix2min,...
+         intensity{ii}, 'Color', colors(ii,:))
 end
 
 xlabel('time (mins)')
-ylabel('total intensity')
+ylabel('Intensity (a.u.)')
 legend(legendArr{:}, 'Location', 'southeast');
 llmFig % implements figure aesthetics
 
@@ -51,24 +54,24 @@ if savestuff
 end
 
 %%
-% Plot all the integrated regions
+% Plot all the cell regions analyzed
 figure
-h = pcolor(kymo);
+h = pcolor((1:ncols).*pix2um, (1:nrows).*pix2min, kymo);
 colormap(gray);
 set(h, 'EdgeColor', 'none');
-xlim([0, size(kymo, 2)]);
-ylim([0, size(kymo, 1)]);
-axis equal;
+axis square;
 hold on;
 
 for ii = 1:numel(roiPoints)
-    plot(roiPoints{ii}(:,1), roiPoints{ii}(:, 2),...
-        'Color', colors(ii,:), 'LineWidth', 2)
-    plot(roiPoints{ii}(:,1)+integrationWidths(ii, 2), roiPoints{ii}(:, 2),...
-        '--', 'Color', colors(ii,:), 'LineWidth', 2)
-    plot(roiPoints{ii}(:,1)-integrationWidths(ii, 1), roiPoints{ii}(:, 2),...
-        '--', 'Color', colors(ii,:), 'LineWidth', 2)
+    plot((roiPoints{ii}(:,1)+integrationWidths(ii, 2)).*pix2um,...
+        roiPoints{ii}(:, 2).*pix2min, '--', 'Color', colors(ii,:), 'LineWidth', 2)
+    plot((roiPoints{ii}(:,1)-integrationWidths(ii, 1)).*pix2um,...
+        roiPoints{ii}(:, 2).*pix2min, '--', 'Color', colors(ii,:), 'LineWidth', 2)
 end
+xlabel('position (\mum)')
+ylabel('time (min)')
+set(gca, 'YDIr', 'reverse')
+llmFig
 
 %%
 % This next part begins the integration over intensities of different cell parts to
@@ -77,18 +80,18 @@ end
 % change in fluorescence of the purse string and cell body.
 % Change according to your own interests.
 
-cellBody = integratedIntensity{1};
-purseString = integratedIntensity{2};
-lamella = integratedIntensity{3};
+%%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
+tArray = (1:numel(intensity{3})).*pix2min; % only integrate over extend of lamellapodia
+normBools = [true, true, false]; % only normalize cell body and purse string, not lamellapodia
+%%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 
-pix2min = (conversions(2)*5); % Each frame is 5 mins apart
+integrals = [];
 
-t = (1:numel(lamella))./pix2min;
-lamella_integral = trapz(t, lamella);
-purseString_integral_normed = trapz(t, purseString(1:numel(lamella)) - purseString(1));
-cellBody_integral_normed =  trapz(t, cellBody(1:numel(lamella)) - cellBody(1));
+% Perform integrations
+for ii = 1:numel(intensity)
+    integrals(ii) = integrateIntensity(intensity{ii}, tArray, normBools(ii));
+end
 
-integrals = [cellBody_integral_normed; purseString_integral_normed; lamella_integral; ];
 fHand = figure;
 aHand = axes('parent', fHand);
 hold(aHand, 'on')
@@ -97,6 +100,8 @@ for ii = 1:numel(integrals)
     bar(ii, integrals(ii), 'parent', aHand, 'facecolor', colors(ii,:));
 end
 set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', {'cell body', 'purse string', 'lamellapodia'})
+
+ylabel('Integrated Intensity')
 
 if savestuff
     saveas(gcf, 'normalizedIntegrals.fig', 'fig')

@@ -25,7 +25,7 @@
 %
 % Returns
 % -------
-% integratedIntensity : array
+% intensity : array
 %     Array of the integrated intensity over time of a kymograph
 % roiPointsFull : array
 %     Array of the full, interpolated values between the vertices exported from the imageJ line
@@ -36,7 +36,7 @@
 % PI: Dr. Michael P. Murrell
 % livingmatter.yale.edu
 
-function [integratedIntensity, roiPointsFull] = integrateActinIntensity(roifname, img, integrationWidths, savestuff, savefname, conversions)
+function [intensity, roiPointsFull] = actinIntensity(roifname, img, integrationWidths, savestuff, savefname, conversions)
     
     % load roi points
     roiPoints = dlmread(roifname);
@@ -59,36 +59,36 @@ function [integratedIntensity, roiPointsFull] = integrateActinIntensity(roifname
 
     [~, ncols] = size(img);
 
-    integratedIntensity = [];
+    intensity = [];
 
     % Some of the lamella is too close to the edge, need to double check
     for ii = 1:size(roiPointsFull, 1)
         if roiPointsFull(ii, 1) + integrationWidths(2) > ncols &&...
             roiPointsFull(ii, 1) - integrationWidths(1) > 0
 
-            integratedIntensity = [integratedIntensity;...
+            intensity = [intensity;...
                 sum(img(roiPointsFull(ii, 2), roiPointsFull(ii, 1)-integrationWidths(1):end))];
         
         elseif roiPointsFull(ii, 1) + integrationWidths(2) < ncols &&...
             roiPointsFull(ii, 1) - integrationWidths(1) < 0
             
-            integratedIntensity = [integratedIntensity;...
+            intensity = [intensity;...
                 sum(img(roiPointsFull(ii, 2), 1:roiPointsFull(ii, 1)+integrationWidths(2)))];
         
         elseif roiPointsFull(ii, 1) + integrationWidths(2) > ncols &&...
             roiPointsFull(ii, 1) - integrationWidths(1) < 0
             
-            integratedIntensity = [integratedIntensity;...
+            intensity = [intensity;...
                 sum(img(roiPointsFull(ii, 2), 1:end))];
         
         else
-            integratedIntensity = [integratedIntensity;...
+            intensity = [intensity;...
                 sum(img(roiPointsFull(ii, 2), roiPointsFull(ii, 1)-integrationWidths(1):roiPointsFull(ii, 1)+integrationWidths(2)))];
         end
     end
 
     if savestuff
         fid = fopen(savefname, 'w');
-        fprintf(fid, '%5.4f\n', integratedIntensity);
+        fprintf(fid, '%5.4f\n', intensity);
         fclose(fid);
     end
