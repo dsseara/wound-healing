@@ -23,7 +23,7 @@ pix2um = 238 * 0.167 / 500; % Change pixel values to physical values in space di
 pix2min = 62 * 5 / 500; % Change pixel values to physical values in time dimension
 legendArr = {'cell body', 'purse string', 'cell front'};
 
-savestuff = true;
+savestuff = false;
 savePath = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666';
 savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'cellFrontIntensity.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
@@ -112,9 +112,10 @@ colors = lines(numel(integrals));
 for ii = 1:numel(integrals)
     bar(ii, integrals(ii), 'parent', aHand, 'facecolor', colors(ii,:));
 end
-set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', {'cell body', 'purse string', 'lamellapodia'})
+set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', legendArr)
 
 ylabel('Integrated Intensity')
+set(gca,'XTickLabelRotation', -45)
 llmFig
 
 if savestuff
