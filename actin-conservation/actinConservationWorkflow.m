@@ -12,15 +12,19 @@
 clear, close all
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
-fnames = {'cellBodyROI_xyCoords.txt', 'purseStringROI_xyCoords.txt', 'lamellapodiaROI_xyCoords.txt'};
-imagefname = 'kymograph_500x500.tif';
+fnames = {'/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl/cellBodyROI_xyCoords.txt',...
+    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl/purseStringROI_xyCoords.txt',...
+    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl/lamellapodiaROI_xyCoords.txt'};
+imagefname = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl/kymograph_500x500.tif';
 integrationWidths = [70, 20; 20, 20; 70, 50]; % found by trial and error to produce minimal overlap
-savestuff = true;
-savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'lamellaIntegratedIntensity.txt'};
 pix2um = 165 / 500; % 165 um per 500 pixels
 pix2frames = 32 / 500; % 32 frames per 500 pixels
 pix2min = 32 * 5 / 500; % 5 mins per frame, 32 frames per 500 pixels
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
+
+savestuff = true;
+savePath = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl';
+savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'lamellaIntegratedIntensity.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
 kymo = imread(imagefname);
@@ -29,8 +33,9 @@ kymo = imread(imagefname);
 %% 
 % Get intensity over time for each cell part
 for ii = 1:numel(fnames)
+    savefname_full = fullfile(savePath, savefname{ii});
     [intensity{ii}, roiPoints{ii}] = actinIntensity(fnames{ii}, kymo,...
-        integrationWidths(ii, :), savestuff, savefname{ii}, [1/pix2um, 1/pix2frames]);
+        integrationWidths(ii, :), savestuff, savefname_full, [1/pix2um, 1/pix2frames]);
 end
 
 % Plot the intensities over time
@@ -48,9 +53,9 @@ legend(legendArr{:}, 'Location', 'southeast');
 llmFig % implements figure aesthetics
 
 if savestuff
-    saveas(gcf, 'actinIntensityConservation.fig', 'fig')
-    saveas(gcf, 'actinIntensityConservation.tif', 'tif')
-    saveas(gcf, 'actinIntensityConservation.eps', 'epsc')
+    saveas(gcf, fullfile(savePath, 'actinIntensity.fig'), 'fig')
+    saveas(gcf, fullfile(savePath, 'actinIntensity.tif'), 'tif')
+    saveas(gcf, fullfile(savePath, 'actinIntensity.eps'), 'epsc')
 end
 
 %%
@@ -73,12 +78,19 @@ ylabel('time (min)')
 set(gca, 'YDIr', 'reverse')
 llmFig
 
+if savestuff
+    saveas(gcf, fullfile(savePath, 'intensityRegions.fig'), 'fig')
+    saveas(gcf, fullfile(savePath, 'intensityRegions.tif'), 'tif')
+    saveas(gcf, fullfile(savePath, 'intensityRegions.eps'), 'epsc')
+end
+
 %%
 % This next part begins the integration over intensities of different cell parts to
 % attempt to account for the flow of actin from one part to another.
 % As written, it finds the total fluorescence in the lamellapodium, and compares it to the
 % change in fluorescence of the purse string and cell body.
-% Change according to your own interests.
+%
+% See documentation in integrateIntensity.m
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 tArray = (1:numel(intensity{3})).*pix2min; % only integrate over extend of lamellapodia
@@ -104,7 +116,7 @@ set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', {'cell body', 'purse string'
 ylabel('Integrated Intensity')
 
 if savestuff
-    saveas(gcf, 'normalizedIntegrals.fig', 'fig')
-    saveas(gcf, 'normalizedIntegrals.tif', 'tif')
-    saveas(gcf, 'normalizedIntegrals.eps', 'epsc')
+    saveas(gcf, fullfile(savePath, 'intensityIntegrals.fig'), 'fig')
+    saveas(gcf, fullfile(savePath, 'intensityIntegrals.tif'), 'tif')
+    saveas(gcf, fullfile(savePath, 'intensityIntegrals.eps'), 'epsc')
 end
