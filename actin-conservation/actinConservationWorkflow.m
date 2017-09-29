@@ -12,19 +12,20 @@
 clear, close all
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
-fnames = {'/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl/cellBodyROI_xyCoords.txt',...
-    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl/purseStringROI_xyCoords.txt',...
-    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl/lamellapodiaROI_xyCoords.txt'};
-imagefname = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl/kymograph_500x500.tif';
-integrationWidths = [70, 20; 20, 20; 70, 50]; % found by trial and error to produce minimal overlap
-pix2um = 165 / 500; % 165 um per 500 pixels
-pix2frames = 32 / 500; % 32 frames per 500 pixels
-pix2min = 32 * 5 / 500; % 5 mins per frame, 32 frames per 500 pixels
-legendArr = {'cell body', 'purse string', 'lamellapodia'};
+fnames = {'/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666/cellBodyROI_xyCoords.txt',...
+    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666/purseStringROI_xyCoords.txt',...
+    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666/cellFrontROI_xyCoords.txt'};
+imagefname = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666/kymograph_500x500.tif';
+integrationWidths = [10, 10; 10, 10; 10, 10]; % found by trial and error to produce minimal overlap
+rescalePixelsX = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in space dimension
+rescalePixelsT = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
+pix2um = 238 * 0.167 / 500; % Change pixel values to physical values in space dimension
+pix2min = 62 * 5 / 500; % Change pixel values to physical values in time dimension
+legendArr = {'cell body', 'purse string', 'cell front'};
 
 savestuff = true;
-savePath = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/actin-conservation/ctrl';
-savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'lamellaIntegratedIntensity.txt'};
+savePath = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666';
+savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'cellFrontIntensity.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
 kymo = imread(imagefname);
@@ -35,7 +36,7 @@ kymo = imread(imagefname);
 for ii = 1:numel(fnames)
     savefname_full = fullfile(savePath, savefname{ii});
     [intensity{ii}, roiPoints{ii}] = actinIntensity(fnames{ii}, kymo,...
-        integrationWidths(ii, :), savestuff, savefname_full, [1/pix2um, 1/pix2frames]);
+        integrationWidths(ii, :), savestuff, savefname_full, [rescalePixelsX, rescalePixelsT]);
 end
 
 % Plot the intensities over time
@@ -114,6 +115,7 @@ end
 set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', {'cell body', 'purse string', 'lamellapodia'})
 
 ylabel('Integrated Intensity')
+llmFig
 
 if savestuff
     saveas(gcf, fullfile(savePath, 'intensityIntegrals.fig'), 'fig')

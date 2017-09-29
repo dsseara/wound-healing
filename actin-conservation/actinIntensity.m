@@ -61,7 +61,7 @@ function [intensity, roiPointsFull] = actinIntensity(roifname, img, integrationW
 
     intensity = [];
 
-    % Some of the lamella is too close to the edge, need to double check
+    % Ensure that the integration region doesn't exceed the size of the image
     for ii = 1:size(roiPointsFull, 1)
         if roiPointsFull(ii, 1) + integrationWidths(2) > ncols &&...
             roiPointsFull(ii, 1) - integrationWidths(1) > 0
@@ -83,7 +83,8 @@ function [intensity, roiPointsFull] = actinIntensity(roifname, img, integrationW
         
         else
             intensity = [intensity;...
-                sum(img(roiPointsFull(ii, 2), roiPointsFull(ii, 1)-integrationWidths(1):roiPointsFull(ii, 1)+integrationWidths(2)))];
+                sum(img(roiPointsFull(ii, 2), roiPointsFull(ii, 1)-integrationWidths(1):...
+                                              roiPointsFull(ii, 1)+integrationWidths(2)))];
         end
     end
 
