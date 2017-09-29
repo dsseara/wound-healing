@@ -12,20 +12,20 @@
 clear, close all
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
-fnames = {'/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666/cellBodyROI_xyCoords.txt',...
-    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666/purseStringROI_xyCoords.txt',...
-    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666/cellFrontROI_xyCoords.txt'};
-imagefname = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666/kymograph_500x500.tif';
-integrationWidths = [10, 10; 10, 10; 10, 10]; % found by trial and error to produce minimal overlap
-rescalePixelsX = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in space dimension
-rescalePixelsT = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
-pix2um = 238 * 0.167 / 500; % Change pixel values to physical values in space dimension
-pix2min = 62 * 5 / 500; % Change pixel values to physical values in time dimension
-legendArr = {'cell body', 'purse string', 'cell front'};
+fnames = {'/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl/cellBodyROI_xyCoords.txt',...
+    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl/purseStringROI_xyCoords.txt',...
+    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl/lamellapodiaROI_xyCoords.txt'};
+imagefname = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl/kymograph_500x500.tif';
+integrationWidths = [20, 20; 20, 20; 65, 50]; % found by trial and error to produce minimal overlap
+rescalePixelsX = 500 / 162; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in space dimension
+rescalePixelsT = 500 / 32; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
+pix2um = 162 * 0.167 / 500; % Change pixel values to physical values in space dimension
+pix2min = 32 * 5 / 500; % Change pixel values to physical values in time dimension
+legendArr = {'cell body', 'purse string', 'lamellapodia'};
 
-savestuff = false;
-savePath = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666';
-savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'cellFrontIntensity.txt'};
+savestuff = true;
+savePath = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl';
+savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'lamellapodiaIntegratedIntensity.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
 kymo = imread(imagefname);
