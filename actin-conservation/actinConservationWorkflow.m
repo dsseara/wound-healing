@@ -23,7 +23,7 @@ pix2um = 238 * 0.167 / 500; % Change pixel values to physical values in space di
 pix2min = 62 * 5 / 500; % Change pixel values to physical values in time dimension
 legendArr = {'cell body', 'purse string', 'cell front'};
 
-savestuff = false;
+savestuff = true;
 savePath = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ck666';
 savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'cellFrontIntensity.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
@@ -95,7 +95,7 @@ end
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 tArray = (1:numel(intensity{3})).*pix2min; % only integrate over extend of lamellapodia
-normBools = [true, true, false]; % only normalize cell body and purse string, not lamellapodia
+normBools = [true, true, true]; % only normalize cell body and purse string, not lamellapodia
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 
 integrals = [];
@@ -116,10 +116,11 @@ set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', legendArr)
 
 ylabel('Integrated Intensity')
 set(gca,'XTickLabelRotation', -45)
+ylim([0, 5].*1e5)
 llmFig
 
 if savestuff
-    saveas(gcf, fullfile(savePath, 'intensityIntegrals.fig'), 'fig')
-    saveas(gcf, fullfile(savePath, 'intensityIntegrals.tif'), 'tif')
-    saveas(gcf, fullfile(savePath, 'intensityIntegrals.eps'), 'epsc')
+    saveas(gcf, fullfile(savePath, 'intensityIntegrals_allNormed.fig'), 'fig')
+    saveas(gcf, fullfile(savePath, 'intensityIntegrals_allNormed.tif'), 'tif')
+    saveas(gcf, fullfile(savePath, 'intensityIntegrals_allNormed.eps'), 'epsc')
 end
