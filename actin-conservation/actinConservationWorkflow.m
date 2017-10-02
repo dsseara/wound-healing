@@ -25,7 +25,7 @@ pix2um = 162 * 0.167 / 500; % Change pixel values to physical values in space di
 pix2min = 32 * 5 / 500; % Change pixel values to physical values in time dimension
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
 
-savestuff = true;
+savestuff = false;
 savefname = {'intensityTimeSeries_cellBody.txt', 'intensityTimeSeries_purseString.txt', 'intensityTimeSeries_lamellapodia.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
@@ -136,15 +136,18 @@ savefname = fullfile(savePath, 'linearRegressionResults.csv');
 
 if linRegFlag
     p = zeros(numel(intensity), 2); % array to store slope and intercept of linear fit
+    % figure, hold on;
     for ii = 1:numel(intensity)
-        maskedData = intensity{ii};
-        x0 = (1:numel(maskedData)).*pix2min;
+        x0 = (1:numel(intensity{ii})).*pix2min;
         x0 = x0(mask);
-        maskedData = maskedData(mask);
+        maskedData = intensity{ii}(mask);
         x1 = linspace(min(x0), max(x0), 100);
-        [p(ii, :), s] = polyfit((1:numel(maskedData)).*pix2min, maskedData.', 1);
-        disp(p(ii, 1))
+        [p(ii, :), s] = polyfit(x0, maskedData', 1);
+        y1 = polyval(p(ii, :), x1);
+        % plot((1:numel(intensity{ii})).*pix2min, intensity{ii}, 'Color', colors(ii, :))
+        % plot(x1, y1+100, 'k--')%, 'Color', colors(ii, :))
     end
+    % llmFig
 
     if savestuff
         slope = p(:, 1);
