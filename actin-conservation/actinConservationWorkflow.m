@@ -12,10 +12,12 @@
 clear, close all
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
-fnames = {'/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl/cellBodyROI_xyCoords.txt',...
-    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl/purseStringROI_xyCoords.txt',...
-    '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl/lamellapodiaROI_xyCoords.txt'};
-imagefname = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl/kymograph_500x500.tif';
+dropboxPath = '/Users/Danny/Dropbox/Manuscript_WoundHealing';
+savePath = fullfile(dropboxPath, 'Figure5_Transition', 'ctrl');
+fnames = {fullfile(savePath,'roiXYCoords_cellBody.txt'),...
+    fullfile(savePath, 'roiXYCoords_purseString.txt'),...
+    fullfile(savePath, 'roiXYCoords_lamellapodia.txt')};
+imagefname = fullfile(savePath, 'kymograph_500x500.tif');
 integrationWidths = [20, 20; 20, 20; 65, 50]; % found by trial and error to produce minimal overlap
 rescalePixelsX = 500 / 162; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in space dimension
 rescalePixelsT = 500 / 32; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
@@ -24,8 +26,7 @@ pix2min = 32 * 5 / 500; % Change pixel values to physical values in time dimensi
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
 
 savestuff = true;
-savePath = '/Users/Danny/Dropbox/Manuscript_WoundHealing/Figure5_Transition/ctrl';
-savefname = {'cellBodyIntegratedIntensity.txt', 'purseStringIntegratedIntensity.txt', 'lamellapodiaIntegratedIntensity.txt'};
+savefname = {'intensityTimeSeries_cellBody.txt', 'intensityTimeSeries_purseString.txt', 'intensityTimeSeries_lamellapodia.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
 kymo = imread(imagefname);
@@ -122,4 +123,33 @@ if savestuff
     saveas(gcf, fullfile(savePath, 'intensityIntegrals.fig'), 'fig')
     saveas(gcf, fullfile(savePath, 'intensityIntegrals.tif'), 'tif')
     saveas(gcf, fullfile(savePath, 'intensityIntegrals.eps'), 'epsc')
+end
+
+%%
+% Perform linear regression on specified region
+
+%%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
+linRegFlag = true;
+mask = 110:200;
+savefname = fullfile(savePath, 'linearRegressionResults.csv');
+%%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
+
+if linRegFlag
+    p = zeros(numel(intensity), 2); % array to store slope and intercept of linear fit
+    for ii = 1:numel(intensity)
+        maskedData = intensity{ii};
+        x0 = (1:numel(maskedData)).*pix2min;
+        x0 = x0(mask);
+        maskedData = maskedData(mask);
+        x1 = linspace(min(x0), max(x0), 100);
+        [p(ii, :), s] = polyfit((1:numel(maskedData)).*pix2min, maskedData.', 1);
+        disp(p(ii, 1))
+    end
+
+    if savestuff
+        slope = p(:, 1);
+        intercept = p(:, 2);
+        t = table(slope, intercept, 'RowNames', legendArr);
+        writetable(t, savefname, 'WriteRowNames', true)
+    end
 end
