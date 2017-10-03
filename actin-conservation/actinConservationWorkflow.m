@@ -13,16 +13,16 @@ clear, close all
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 dropboxPath = '/Users/Danny/Dropbox/Manuscript_WoundHealing';
-savePath = fullfile(dropboxPath, 'Figure5_Transition', 'ctrl');
+savePath = fullfile(dropboxPath, 'Figure5_Transition', 'ctrl', 'bkrdSubtracted');
 fnames = {fullfile(savePath,'roiXYCoords_cellBody.txt'),...
     fullfile(savePath, 'roiXYCoords_purseString.txt'),...
     fullfile(savePath, 'roiXYCoords_lamellapodia.txt')};
 imagefname = fullfile(savePath, 'kymograph_500x500.tif');
-integrationWidths = [20, 20; 20, 20; 65, 50]; % found by trial and error to produce minimal overlap
+integrationWidths = [15, 15; 20, 15; 55, 50]; % found by trial and error to produce minimal overlap
 rescalePixelsX = 500 / 162; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in space dimension
-rescalePixelsT = 500 / 32; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
+rescalePixelsT = 500 / 27; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
 pix2um = 162 * 0.167 / 500; % Change pixel values to physical values in space dimension
-pix2min = 32 * 5 / 500; % Change pixel values to physical values in time dimension
+pix2min = 27 * 5 / 500; % Change pixel values to physical values in time dimension
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
 
 savestuff = true;
@@ -52,8 +52,8 @@ end
 xlabel('time (mins)')
 ylabel('Intensity (a.u.)')
 legend(legendArr{:}, 'Location', 'southeast');
-ylim([0, 7500])
-llmFig % implements figure aesthetics
+ylim([0, 3].*1e5)
+llmFig('font', 'Arial') % implements figure aesthetics
 
 if savestuff
     saveas(gcf, fullfile(savePath, 'actinIntensity.fig'), 'fig')
@@ -79,7 +79,7 @@ end
 xlabel('position (\mum)')
 ylabel('time (min)')
 set(gca, 'YDIr', 'reverse')
-llmFig
+llmFig('font', 'Arial')
 
 if savestuff
     saveas(gcf, fullfile(savePath, 'intensityRegions.fig'), 'fig')
@@ -118,7 +118,7 @@ set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', legendArr)
 
 ylabel('Integrated Intensity')
 set(gca,'XTickLabelRotation', -45)
-llmFig
+llmFig('font', 'Arial')
 
 if savestuff
     saveas(gcf, fullfile(savePath, 'intensityIntegrals.fig'), 'fig')
@@ -148,7 +148,7 @@ if linRegFlag
         % plot((1:numel(intensity{ii})).*pix2min, intensity{ii}, 'Color', colors(ii, :))
         % plot(x1, y1+100, 'k--')%, 'Color', colors(ii, :))
     end
-    % llmFig
+    % llmFig('font', 'Arial')
 
     if savestuff
         slope = p(:, 1);
