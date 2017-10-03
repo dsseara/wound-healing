@@ -25,7 +25,7 @@ pix2um = 162 * 0.167 / 500; % Change pixel values to physical values in space di
 pix2min = 32 * 5 / 500; % Change pixel values to physical values in time dimension
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
 
-savestuff = false;
+savestuff = true;
 savefname = {'intensityTimeSeries_cellBody.txt', 'intensityTimeSeries_purseString.txt', 'intensityTimeSeries_lamellapodia.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
@@ -52,6 +52,7 @@ end
 xlabel('time (mins)')
 ylabel('Intensity (a.u.)')
 legend(legendArr{:}, 'Location', 'southeast');
+ylim([0, 7500])
 llmFig % implements figure aesthetics
 
 if savestuff
