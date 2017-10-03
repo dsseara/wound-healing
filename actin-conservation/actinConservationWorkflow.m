@@ -51,6 +51,7 @@ end
 xlabel('time (mins)')
 ylabel('Intensity (a.u.)')
 legend(legendArr{:}, 'Location', 'southeast');
+ylim([0,7250])
 llmFig % implements figure aesthetics
 
 if savestuff
@@ -123,4 +124,26 @@ if savestuff
     saveas(gcf, fullfile(savePath, 'intensityIntegrals_allNormed.fig'), 'fig')
     saveas(gcf, fullfile(savePath, 'intensityIntegrals_allNormed.tif'), 'tif')
     saveas(gcf, fullfile(savePath, 'intensityIntegrals_allNormed.eps'), 'epsc')
+end
+
+%%
+% Subtract off the intensity from the cell front to eliminate the overal background increase in intensity
+
+figure, hold on
+
+% Subtract off the last 30 points because there's a big dip in the intensity of the
+% cell front due to the total integrated region going outside the image frame
+plot((1:numel(intensity{3})-30)*pix2min,...
+    intensity{2}(1:numel(intensity{3})-30)-(intensity{3}(1:end-30)-intensity{3}(1)))
+plot((1:numel(intensity{3})-30)*pix2min,...
+    intensity{1}(1:numel(intensity{3})-30)-(intensity{3}(1:end-30)-intensity{3}(1)))
+ylim([0,7250])
+xlabel('time (min)')
+ylabel('Intensity (a.u.)')
+llmFig
+
+if savestuff
+    saveas(gcf, fullfile(savePath, 'actinIntensity_bkrdSubtracted.fig'), 'fig')
+    saveas(gcf, fullfile(savePath, 'actinIntensity_bkrdSubtracted.tif'), 'tif')
+    saveas(gcf, fullfile(savePath, 'actinIntensity_bkrdSubtracted.eps'), 'epsc')
 end
