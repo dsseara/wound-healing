@@ -17,8 +17,8 @@ filepath = os.path.join(os.sep, 'Users', 'Danny', 'Dropbox',
                         'density_tau_stiffness_scatter')
 filename = 'Retraction_Masterfile_MM.xlsx'
 
-df = pd.read_excel(os.path.join(filepath, filename), index_col=None,
-                   na_values=['NA'], parse_cols="B,H,P")
+df = pd.read_excel(os.path.join(filepath, filename),
+                   index_col=None, na_values=['NA'], parse_cols="B,H,P")
 
 df.columns = ['stiffness', 'tau1', 'density']
 
@@ -44,6 +44,6 @@ for index, (stiffness, data) in enumerate(df.groupby('stiffness')):
 plt.legend()
 ax1.set_xlabel(r'$density \; (cells/mm^2$)')
 ax1.set_ylabel(r'$\tau_1 \; (s)$')
-plt.savefig(os.path.join(filepath, 'densityVsTau1.pdf'), transparent=True)
+# plt.savefig(os.path.join(filepath, 'densityVsTau1.pdf'), transparent=True)
 
 plt.show()
