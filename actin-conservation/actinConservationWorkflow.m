@@ -52,8 +52,13 @@ end
 xlabel('time (mins)')
 ylabel('Intensity (a.u.)')
 legend(legendArr{:}, 'Location', 'southeast');
+<<<<<<< HEAD
 ylim([0, 3].*1e5)
 llmFig('font', 'Arial') % implements figure aesthetics
+=======
+ylim([0,7250])
+llmFig % implements figure aesthetics
+>>>>>>> d706319c9adf8408dacab89d3104f9abed78528f
 
 if savestuff
     saveas(gcf, fullfile(savePath, 'actinIntensity.fig'), 'fig')
@@ -118,6 +123,7 @@ set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', legendArr)
 
 ylabel('Integrated Intensity')
 set(gca,'XTickLabelRotation', -45)
+<<<<<<< HEAD
 llmFig('font', 'Arial')
 
 if savestuff
