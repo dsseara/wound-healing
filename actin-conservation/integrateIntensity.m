@@ -21,10 +21,6 @@
 % Lab of Living Matter, Yale University
 % PI: Dr. Michael P. Murrell
 % livingmatter.yale.edu
-function totalIntensity = integrateIntensity(intensity, tArray, normBool)
-    if normBool
-        totalIntensity = trapz(tArray, intensity(1:numel(tArray))-intensity(1));
-    else
-        totalIntensity = trapz(tArray, intensity(1:numel(tArray)));
-    end
+function totalIntensity = integrateIntensity(intensity, tArray)
+    totalIntensity = trapz(tArray, intensity(1:numel(tArray))-min(intensity));
 end

@@ -25,7 +25,7 @@ pix2um = 162 * 0.167 / 500; % Change pixel values to physical values in space di
 pix2min = 27 * 5 / 500; % Change pixel values to physical values in time dimension
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
 
-savestuff = true;
+savestuff = false;
 savefname = {'intensityTimeSeries_cellBody.txt', 'intensityTimeSeries_purseString.txt', 'intensityTimeSeries_lamellapodia.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
@@ -97,14 +97,14 @@ end
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 tArray = (1:numel(intensity{3})).*pix2min; % only integrate over extend of lamellapodia
-normBools = [true, true, false]; % only normalize cell body and purse string, not lamellapodia
+% normBools = [true, true, false]; % only normalize cell body and purse string, not lamellapodia
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 
 integrals = [];
 
 % Perform integrations
 for ii = 1:numel(intensity)
-    integrals(ii) = integrateIntensity(intensity{ii}, tArray, normBools(ii));
+    integrals(ii) = integrateIntensity(intensity{ii}, tArray);
 end
 
 fHand = figure;
