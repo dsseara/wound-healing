@@ -60,6 +60,6 @@ ax.plot(xx, xx * slope + intercept, '--k')
 ax.set_xlabel('E (kPa)')
 ax.set_ylabel(r'$\tau_0 \; (s)$')
 ax.set_ylim([2, 45])
-# plt.savefig(os.path.join(filepath, 'tauVsStiffness.pdf'), transparent=True)
+plt.savefig(os.path.join(filepath, 'tauVsStiffness.pdf'), transparent=True)
 
 plt.show()
