@@ -92,7 +92,10 @@ ax.text(90, 0.30, r'$R^2 = {:.2f}$'.format(r_squared), fontsize=12)
 ax.text(90, 0.28,
         r'$\tau \equiv \eta/E ={:.3f} \; s$'.format(coeffs[2] / coeffs[1]),
         fontsize=12)
-# ax.tick_params(direction='in')
+ax.text(90, 0.26,
+        r'$A \equiv \sigma_0/\eta ={A:.2f} \; 1/s$'.format(A=coeffs[0] / coeffs[2]),
+        fontsize=12)
 
-
+plt.savefig(os.path.join(savepath, 'retractionVelocityFit.pdf'),
+            transparent=True)
 plt.show()
