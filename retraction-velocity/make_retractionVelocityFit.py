@@ -1,3 +1,19 @@
+'''
+Script that fits velocity of retraction of a cell monolayer after ablation
+to the strain-rate of a Kelvin-Voigt solid suddenly released from a constant
+applied stress.
+
+de/dt (t) = sigma0/eta * exp(-E*t/eta)
+
+with sigma0 the uniform applied stress, E Young's modulus,
+eta viscosity, t elapsed time
+
+Created by Daniel Seara
+2017/10/10
+Lab of Living Matter
+'''
+
+
 import os
 import csv
 import numpy as np
@@ -7,7 +23,7 @@ import pandas as pd
 import scipy.optimize as optimize
 import seaborn as sns
 mpl.rcParams['pdf.fonttype'] = 42
-mpl.rcParams['text.usetex'] = True
+mpl.rcParams['text.usetex'] = False
 plt.close('all')
 
 sns.set_style('ticks', {'axes.edgecolor': '0.0',
@@ -21,17 +37,10 @@ dropboxpath = '/media/daniel/storage1/Dropbox/Manuscript_WoundHealing'
 datafile = os.path.join(dropboxpath,
                         'Figure1_Ablate/prepfiles/New_Retraction_Vals.xlsx')
 savepath = os.path.join(dropboxpath,
-                        'Figure1_Ablate/retraction_velocity')
+                        'SFig0-KelvinVoigt')
 
 
 def strainRateKelvinVoigt(t, sigma0, E, eta):
-    '''
-    Strain rate of Kelvin-Voigt solid after experiencing a uniform
-    stress for a long time, and then suddenly released
-    de/dt (t) = sigma0/eta * exp(-E*t/eta)
-    where sigma0 is uniform stress, E is Young's modulus, eta is viscosity,
-    t is elapsed time
-    '''
     return sigma0 / eta * np.exp(-E * t / eta)
 
 
@@ -88,11 +97,12 @@ y0, y1 = ax.get_ylim()
 ax.set_aspect((x1 - x0) / (y1 - y0))
 
 # put in fit data
-ax.text(90, 0.30, r'$R^2 = {:.2f}$'.format(r_squared), fontsize=12)
-ax.text(90, 0.28,
+xpos = 85
+ax.text(xpos, 0.30, r'$R^2 = {:.2f}$'.format(r_squared), fontsize=12)
+ax.text(xpos, 0.28,
         r'$\tau \equiv \eta/E ={:.3f} \; s$'.format(coeffs[2] / coeffs[1]),
         fontsize=12)
-ax.text(90, 0.26,
+ax.text(xpos, 0.26,
         r'$A \equiv \sigma_0/\eta ={A:.2f} \; 1/s$'.format(A=coeffs[0] / coeffs[2]),
         fontsize=12)
 
