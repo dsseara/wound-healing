@@ -25,7 +25,7 @@ pix2um = 162 * 0.167 / 500; % Change pixel values to physical values in space di
 pix2min = 27 * 5 / 500; % Change pixel values to physical values in time dimension
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
 
-savestuff = true;
+savestuff = false;
 savefname = {'intensityTimeSeries_cellBody.txt', 'intensityTimeSeries_purseString.txt', 'intensityTimeSeries_lamellapodia.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
@@ -102,14 +102,14 @@ end
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 tArray = (1:numel(intensity{3})).*pix2min; % only integrate over extend of lamellapodia
-normBools = [true, true, true]; % only normalize cell body and purse string, not lamellapodia
+% normBools = [true, true, false]; % only normalize cell body and purse string, not lamellapodia
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 
 integrals = [];
 
 % Perform integrations
 for ii = 1:numel(intensity)
-    integrals(ii) = integrateIntensity(intensity{ii}, tArray, normBools(ii));
+    integrals(ii) = integrateIntensity(intensity{ii}, tArray);
 end
 
 fHand = figure;
@@ -162,35 +162,4 @@ if linRegFlag
         t = table(slope, intercept, 'RowNames', legendArr);
         writetable(t, savefname, 'WriteRowNames', true)
     end
-=======
-ylim([0, 5].*1e5)
-llmFig
-
-if savestuff
-    saveas(gcf, fullfile(savePath, 'intensityIntegrals_allNormed.fig'), 'fig')
-    saveas(gcf, fullfile(savePath, 'intensityIntegrals_allNormed.tif'), 'tif')
-    saveas(gcf, fullfile(savePath, 'intensityIntegrals_allNormed.eps'), 'epsc')
-end
-
-%%
-% Subtract off the intensity from the cell front to eliminate the overal background increase in intensity
-
-figure, hold on
-
-% Subtract off the last 30 points because there's a big dip in the intensity of the
-% cell front due to the total integrated region going outside the image frame
-plot((1:numel(intensity{3})-30)*pix2min,...
-    intensity{2}(1:numel(intensity{3})-30)-(intensity{3}(1:end-30)-intensity{3}(1)))
-plot((1:numel(intensity{3})-30)*pix2min,...
-    intensity{1}(1:numel(intensity{3})-30)-(intensity{3}(1:end-30)-intensity{3}(1)))
-ylim([0,7250])
-xlabel('time (min)')
-ylabel('Intensity (a.u.)')
-llmFig
-
-if savestuff
-    saveas(gcf, fullfile(savePath, 'actinIntensity_bkrdSubtracted.fig'), 'fig')
-    saveas(gcf, fullfile(savePath, 'actinIntensity_bkrdSubtracted.tif'), 'tif')
-    saveas(gcf, fullfile(savePath, 'actinIntensity_bkrdSubtracted.eps'), 'epsc')
->>>>>>> d706319c9adf8408dacab89d3104f9abed78528f
 end
