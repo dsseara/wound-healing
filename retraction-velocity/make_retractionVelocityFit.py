@@ -89,7 +89,7 @@ ax.plot(data.time, strainRateKelvinVoigt(data.time, *coeffs), 'r--',
 
 ax.set_xlabel(r'$t \; (s)$', fontsize=15)
 ax.set_ylabel(r'$v \; (\mu m/s)$', fontsize=15)
-ax.set_title(r'$\dot{\epsilon}(t) = A e^{-t/\tau}$')
+ax.set_title(r'Kelvin-Voigt retraction $\dot{\epsilon}(t) = A e^{-t/\tau}$')
 
 # make axis square
 x0, x1 = ax.get_xlim()
