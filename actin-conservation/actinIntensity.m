@@ -56,7 +56,6 @@ function [intensity, roiPointsFull] = actinIntensity(roifname, img, integrationW
                            roiPoints(ii+1, 1), roiPoints(ii+1, 2));
         roiPointsFull = [roiPointsFull; x, y];
     end
-
     [~, ncols] = size(img);
 
     intensity = [];
