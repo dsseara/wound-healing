@@ -73,7 +73,7 @@ function [intensity, tArray, roiPointsFull] = actinIntensity(roifname, img, inte
 
     % Ensure that the integration region doesn't exceed the size of the image
     for ii = 1:numel(ia(1:end-1))
-        disp(ii)
+        % disp(ii)
         % keyboard
         ind = ia(ii);
         indNext = ia(ii + 1) - plusminus;
@@ -103,8 +103,13 @@ function [intensity, tArray, roiPointsFull] = actinIntensity(roifname, img, inte
         end
     end
 
-    % Get unique points to return
-    roiPointsFull = roiPointsFull(ia, :);
+    % Get unique points to return. Flip if the roi is given in reverse time order
+    if plusminus == -1
+        roiPointsFull = flipud(roiPointsFull(ia, :));
+        intensity = flipud(intensity);
+    else
+        roiPointsFull = roiPointsFull(ia, :);
+    end
 
     % Get time array to return and save out
     tArray = (1:numel(intensity)) .* pix2min;
