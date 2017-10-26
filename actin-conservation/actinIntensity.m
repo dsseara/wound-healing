@@ -65,12 +65,18 @@ function [intensity, tArray, roiPointsFull] = actinIntensity(roifname, img, inte
     % See docs for unique on these indices, but basically:
     % roiPointsFull(ia, 1) = uniqueTimes
     % roiPointsFull(:, 1) = uniqueTimes(ic)
-    [~, ia, ic] = unique(roiPointsFull(:, 1));
+    [uniqueTimes, ia, ic] = unique(roiPointsFull(:, 2));
+
+    % Check is ia is increasing or decreasing, which will effect how to do the sum
+    % below.
+    plusminus = sign(ia(2)-ia(1));
 
     % Ensure that the integration region doesn't exceed the size of the image
     for ii = 1:numel(ia(1:end-1))
+        disp(ii)
+        % keyboard
         ind = ia(ii);
-        indNext = ia(ii + 1) - 1;
+        indNext = ia(ii + 1) - plusminus;
 
         if roiPointsFull(indNext, 1) + integrationWidths(2) > ncols &&...
            roiPointsFull(ind, 1) - integrationWidths(1) >= 0
