@@ -36,7 +36,7 @@
 % PI: Dr. Michael P. Murrell
 % livingmatter.yale.edu
 
-function [intensity, roiPointsFull] = actinIntensity(roifname, img, integrationWidths, savestuff, savefname, conversions)
+function [intensity, tArray, roiPointsFull] = actinIntensity(roifname, img, integrationWidths, savestuff, savefname, conversions, pix2min)
     
     % load roi points
     roiPoints = dlmread(roifname);
@@ -59,37 +59,52 @@ function [intensity, roiPointsFull] = actinIntensity(roifname, img, integrationW
 
     [~, ncols] = size(img);
 
+    time = [];
     intensity = [];
 
+    % See docs for unique on these indices, but basically:
+    % roiPointsFull(ia, 1) = uniqueTimes
+    % roiPointsFull(:, 1) = uniqueTimes(ic)
+    [~, ia, ic] = unique(roiPointsFull(:, 1));
+
     % Ensure that the integration region doesn't exceed the size of the image
-    for ii = 1:size(roiPointsFull, 1)
-        if roiPointsFull(ii, 1) + integrationWidths(2) > ncols &&...
-            roiPointsFull(ii, 1) - integrationWidths(1) > 0
+    for ii = 1:numel(ia(1:end-1))
+        ind = ia(ii);
+        indNext = ia(ii + 1) - 1;
+
+        if roiPointsFull(indNext, 1) + integrationWidths(2) > ncols &&...
+           roiPointsFull(ind, 1) - integrationWidths(1) >= 0
 
             intensity = [intensity;...
-                sum(img(roiPointsFull(ii, 2), roiPointsFull(ii, 1)-integrationWidths(1):end))];
+                sum(img(roiPointsFull(ind, 2), roiPointsFull(ind, 1)-integrationWidths(1):end))];
         
-        elseif roiPointsFull(ii, 1) + integrationWidths(2) < ncols &&...
-            roiPointsFull(ii, 1) - integrationWidths(1) < 0
+        elseif roiPointsFull(indNext, 1) + integrationWidths(2) < ncols &&...
+               roiPointsFull(ind, 1) - integrationWidths(1) <= 0
             
             intensity = [intensity;...
-                sum(img(roiPointsFull(ii, 2), 1:roiPointsFull(ii, 1)+integrationWidths(2)))];
+                sum(img(roiPointsFull(ind, 2), 1:roiPointsFull(indNext, 1)+integrationWidths(2)))];
         
-        elseif roiPointsFull(ii, 1) + integrationWidths(2) > ncols &&...
-            roiPointsFull(ii, 1) - integrationWidths(1) < 0
+        elseif roiPointsFull(indNext, 1) + integrationWidths(2) > ncols &&...
+               roiPointsFull(ind, 1) - integrationWidths(1) <= 0
             
             intensity = [intensity;...
-                sum(img(roiPointsFull(ii, 2), 1:end))];
+                sum(img(roiPointsFull(ind, 2), 1:end))];
         
         else
             intensity = [intensity;...
-                sum(img(roiPointsFull(ii, 2), roiPointsFull(ii, 1)-integrationWidths(1):...
-                                              roiPointsFull(ii, 1)+integrationWidths(2)))];
+                sum(img(roiPointsFull(ind, 2), roiPointsFull(ind, 1)-integrationWidths(1):...
+                                              roiPointsFull(indNext, 1)+integrationWidths(2)))];
         end
     end
 
+    % Get unique points to return
+    roiPointsFull = roiPointsFull(ia, :);
+
+    % Get time array to return and save out
+    tArray = (1:numel(intensity)) .* pix2min;
+
     if savestuff
         fid = fopen(savefname, 'w');
-        fprintf(fid, '%5.4f\n', intensity);
+        fprintf(fid, '%5.4f \t %5.4f \n', tArray, intensity);
         fclose(fid);
     end

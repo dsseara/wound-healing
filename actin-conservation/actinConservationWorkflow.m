@@ -12,20 +12,20 @@
 clear, close all
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
-dropboxPath = '/Users/Danny/Dropbox/Manuscript_WoundHealing';
-savePath = fullfile(dropboxPath, 'Figure5_Transition', 'ctrl', 'bkrdSubtracted');
-fnames = {fullfile(savePath,'roiXYCoords_cellBody.txt'),...
-    fullfile(savePath, 'roiXYCoords_purseString.txt'),...
-    fullfile(savePath, 'roiXYCoords_lamellapodia.txt')};
-imagefname = fullfile(savePath, 'kymograph_500x500.tif');
-integrationWidths = [15, 15; 20, 15; 55, 50]; % found by trial and error to produce minimal overlap
-rescalePixelsX = 500 / 162; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in space dimension
-rescalePixelsT = 500 / 27; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
-pix2um = 162 * 0.167 / 500; % Change pixel values to physical values in space dimension
-pix2min = 27 * 5 / 500; % Change pixel values to physical values in time dimension
+dropboxPath = '/Users/Danny/Downloads/reactinconservationcodeandfirstresults';
+savePath = fullfile(dropboxPath, 'dannyAnalysis');
+fnames = {fullfile(savePath,'cbxyCoords.txt'),...
+    fullfile(savePath, 'psxyCoords.txt'),...
+    fullfile(savePath, 'lpxyCoords.txt')};
+imagefname = fullfile(savePath, 'actinkymo1-500x500.tif');
+integrationWidths = [5, 15; 10, 10; 15, 40]; % found by trial and error to produce minimal overlap
+rescalePixelsX = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in space dimension
+rescalePixelsT = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
+pix2um = 0.167*454/500; % Change pixel values to physical values in space dimension
+pix2min = 5*35/500; % Change pixel values to physical values in time dimension
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
 
-savestuff = false;
+savestuff = true;
 savefname = {'intensityTimeSeries_cellBody.txt', 'intensityTimeSeries_purseString.txt', 'intensityTimeSeries_lamellapodia.txt'};
 %%% CHANGE %%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%%
 
@@ -36,8 +36,8 @@ kymo = imread(imagefname);
 % Get intensity over time for each cell part
 for ii = 1:numel(fnames)
     savefname_full = fullfile(savePath, savefname{ii});
-    [intensity{ii}, roiPoints{ii}] = actinIntensity(fnames{ii}, kymo,...
-        integrationWidths(ii, :), savestuff, savefname_full, [rescalePixelsX, rescalePixelsT]);
+    [intensity{ii}, tArray{ii}, roiPoints{ii}] = actinIntensity(fnames{ii}, kymo,...
+        integrationWidths(ii, :), savestuff, savefname_full, [rescalePixelsX, rescalePixelsT], pix2min);
 end
 
 % Plot the intensities over time
@@ -45,20 +45,14 @@ colors = lines(numel(intensity));
 
 figure, hold on;
 for ii = 1:numel(intensity)
-    plot((1:numel(intensity{ii})).*pix2min,...
-         intensity{ii}, 'Color', colors(ii,:))
+    plot(tArray{ii}, intensity{ii}, 'Color', colors(ii,:))
 end
 
 xlabel('time (mins)')
 ylabel('Intensity (a.u.)')
 legend(legendArr{:}, 'Location', 'southeast');
-<<<<<<< HEAD
-ylim([0, 3].*1e5)
+% ylim([0, 3].*1e5)
 llmFig('font', 'Arial') % implements figure aesthetics
-=======
-ylim([0,7250])
-llmFig % implements figure aesthetics
->>>>>>> d706319c9adf8408dacab89d3104f9abed78528f
 
 if savestuff
     saveas(gcf, fullfile(savePath, 'actinIntensity.fig'), 'fig')
@@ -83,13 +77,12 @@ for ii = 1:numel(roiPoints)
 end
 xlabel('position (\mum)')
 ylabel('time (min)')
-set(gca, 'YDIr', 'reverse')
-llmFig('font', 'Arial')
+% set(gca, 'YDir', 'reverse')
+% llmFig('font', 'Arial')
 
 if savestuff
     saveas(gcf, fullfile(savePath, 'intensityRegions.fig'), 'fig')
-    saveas(gcf, fullfile(savePath, 'intensityRegions.tif'), 'tif')
-    saveas(gcf, fullfile(savePath, 'intensityRegions.eps'), 'epsc')
+    saveas(gcf, fullfile(savePath, 'intensityRegions.pdf'), 'pdf')
 end
 
 %%
@@ -100,16 +93,15 @@ end
 %
 % See documentation in integrateIntensity.m
 
-%%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
-tArray = (1:numel(intensity{3})).*pix2min; % only integrate over extend of lamellapodia
-% normBools = [true, true, false]; % only normalize cell body and purse string, not lamellapodia
-%%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
+% Get shortest time array, only integrate as long as that one
+[minSize, minInd] = min(cellfun(@(C) size(C,1), intensity));
+shortestTime = tArray{minInd};
 
 integrals = [];
 
 % Perform integrations
 for ii = 1:numel(intensity)
-    integrals(ii) = integrateIntensity(intensity{ii}, tArray);
+    integrals(ii) = trapz(tArray{ii}(1:minSize), intensity{ii}(1:minSize)-min(intensity{ii}));
 end
 
 fHand = figure;
@@ -123,7 +115,7 @@ set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', legendArr)
 
 ylabel('Integrated Intensity')
 set(gca,'XTickLabelRotation', -45)
-<<<<<<< HEAD
+
 llmFig('font', 'Arial')
 
 if savestuff
@@ -137,24 +129,24 @@ end
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 linRegFlag = true;
-mask = 110:200;
 savefname = fullfile(savePath, 'linearRegressionResults.csv');
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 
 if linRegFlag
     p = zeros(numel(intensity), 2); % array to store slope and intercept of linear fit
-    % figure, hold on;
+    figure, hold on;
     for ii = 1:numel(intensity)
-        x0 = (1:numel(intensity{ii})).*pix2min;
+        x0 = tArray{ii};
+        mask = x0>60 & x0<80;
         x0 = x0(mask);
         maskedData = intensity{ii}(mask);
         x1 = linspace(min(x0), max(x0), 100);
         [p(ii, :), s] = polyfit(x0, maskedData', 1);
         y1 = polyval(p(ii, :), x1);
-        % plot((1:numel(intensity{ii})).*pix2min, intensity{ii}, 'Color', colors(ii, :))
-        % plot(x1, y1+100, 'k--')%, 'Color', colors(ii, :))
+        plot((1:numel(intensity{ii})).*pix2min, intensity{ii}, 'Color', colors(ii, :))
+        plot(x1, y1+100, 'k--')%, 'Color', colors(ii, :))
     end
-    % llmFig('font', 'Arial')
+    llmFig('font', 'Arial')
 
     if savestuff
         slope = p(:, 1);
