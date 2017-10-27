@@ -56,7 +56,6 @@ function [intensity, tArray, roiPointsFull] = actinIntensity(roifname, img, inte
                            roiPoints(ii+1, 1), roiPoints(ii+1, 2));
         roiPointsFull = [roiPointsFull; x, y];
     end
-
     [~, ncols] = size(img);
 
     time = [];

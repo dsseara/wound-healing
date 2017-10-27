@@ -18,7 +18,7 @@ fnames = {fullfile(savePath,'cbxyCoords.txt'),...
     fullfile(savePath, 'psxyCoords.txt'),...
     fullfile(savePath, 'lpxyCoords.txt')};
 imagefname = fullfile(savePath, 'actinkymo1-500x500.tif');
-integrationWidths = [5, 15; 10, 15; 15, 40]; % found by trial and error to produce minimal overlap
+integrationWidths = [5, 15; 10, 10; 15, 40]; % found by trial and error to produce minimal overlap
 rescalePixelsX = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in space dimension
 rescalePixelsT = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
 pix2um = 0.167*454/500; % Change pixel values to physical values in space dimension
@@ -51,7 +51,6 @@ end
 xlabel('time (mins)')
 ylabel('Intensity (a.u.)')
 legend(legendArr{:}, 'Location', 'southeast');
-% ylim([0, 3].*1e5)
 llmFig('font', 'Arial') % implements figure aesthetics
 
 if savestuff
@@ -97,6 +96,7 @@ end
 [minSize, minInd] = min(cellfun(@(C) size(C,1), intensity));
 shortestTime = tArray{minInd};
 
+
 integrals = [];
 
 % Perform integrations
@@ -115,7 +115,6 @@ set(gca, 'XTick', 1:numel(integrals), 'XTickLabel', legendArr)
 
 ylabel('Integrated Intensity')
 set(gca,'XTickLabelRotation', -45)
-
 llmFig('font', 'Arial')
 
 if savestuff

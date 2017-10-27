@@ -14,7 +14,7 @@ sns.set_style('ticks', {'axes.edgecolor': '0.0',
                         'xtick.direction': 'in',
                         'ytick.direction': 'in'})
 
-filepath = os.path.join(os.sep, 'Users', 'Danny', 'Dropbox',
+filepath = os.path.join(os.sep, 'media', 'daniel', 'storage1', 'Dropbox',
                         'Manuscript_WoundHealing', 'Figure1_Ablate',
                         'tau_vs_stiffness')
 
@@ -32,11 +32,18 @@ byStiffness = df.groupby('stiffness')
 # convert densities from um^-2 to mm^-2
 slope, intercept, rvalue, pvalue, stderr = stats.linregress(df['stiffness'],
                                                             df['tau'])
+
+# Save the fit data to a csv file
 statDict = {'slope': slope,
             'intercept': intercept,
             'r-squared': rvalue**2,
             'p-value': pvalue,
             'stderr': stderr}
+
+with open(os.path.join(filepath, 'fitSummary.csv'), 'w') as csv_file:
+    w = csv.DictWriter(csv_file, statDict.keys())
+    w.writeheader()
+    w.writerow(statDict)
 
 # Plot points according to stiffness
 means = byStiffness.mean()

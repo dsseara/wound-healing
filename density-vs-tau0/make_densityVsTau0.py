@@ -1,3 +1,7 @@
+'''
+Script to create figure panel where 
+'''
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,7 +16,7 @@ sns.set_style('ticks', {'axes.edgecolor': '0.0',
                         'ytick.direction': 'in',
                         'xtick.position': 'both'})
 
-filepath = os.path.join(os.sep, 'Users', 'Danny', 'Dropbox',
+filepath = os.path.join(os.sep, 'media', 'daniel', 'storage1', 'Dropbox',
                         'Manuscript_WoundHealing', 'Figure1_Ablate',
                         'density_tau_stiffness_scatter')
 filename = 'Retraction_Masterfile_MM.xlsx'
@@ -20,7 +24,7 @@ filename = 'Retraction_Masterfile_MM.xlsx'
 df = pd.read_excel(os.path.join(filepath, filename),
                    index_col=None, na_values=['NA'], parse_cols="B,H,P")
 
-df.columns = ['stiffness', 'tau1', 'density']
+df.columns = ['stiffness', 'tau0', 'density']
 
 df = df.dropna()
 
@@ -28,7 +32,7 @@ df = df.dropna()
 df['density'] *= 1e6
 
 slope, intercept, rvalue, pvalue, stderr = stats.linregress(df['density'],
-                                                            df['tau1'])
+                                                            df['tau0'])
 xx = np.linspace(df['density'].min(), df['density'].max(), 500)
 
 fig, ax1 = plt.subplots()
@@ -38,7 +42,7 @@ ax1.text(5900, 25, 'p = %.3f' % pvalue)
 colors = sns.color_palette("viridis", 5)
 
 for index, (stiffness, data) in enumerate(df.groupby('stiffness')):
-    ax1.plot(data['density'], data['tau1'], 'o', label=stiffness,
+    ax1.plot(data['density'], data['tau0'], 'o', label=stiffness,
              color=colors[index], markeredgewidth=0, markersize=20)
 
 plt.legend()
