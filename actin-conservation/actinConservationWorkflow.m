@@ -13,16 +13,16 @@ clear, close all
 
 %%% CHANGE %%%%%%%%%%%%%% CHANGE %%%%%%%%%%%% CHANGE %%%%%%%%%%%%%
 dropboxPath = '/Users/Danny/Downloads/reactinconservationcodeandfirstresults';
-savePath = fullfile(dropboxPath, 'dannyAnalysis');
-fnames = {fullfile(savePath,'cbxyCoords.txt'),...
-    fullfile(savePath, 'psxyCoords.txt'),...
-    fullfile(savePath, 'lpxyCoords.txt')};
-imagefname = fullfile(savePath, 'actinkymo1-500x500.tif');
-integrationWidths = [5, 15; 10, 10; 15, 40]; % found by trial and error to produce minimal overlap
+savePath = fullfile(dropboxPath);
+fnames = {fullfile(savePath,'actinkymo1CB.txt'),...
+    fullfile(savePath, 'actinkymo1PS.txt'),...
+    fullfile(savePath, 'actinkymo1LM.txt')};
+imagefname = fullfile(savePath, 'actinkymo1.tif');
+integrationWidths = [10, 15; 0, 25; 20, 40]; % found by trial and error to produce minimal overlap
 rescalePixelsX = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in space dimension
 rescalePixelsT = 1; % Rescale pixel values to  whole numbers if kymograph  has been rescaled in time dimension
-pix2um = 0.167*454/500; % Change pixel values to physical values in space dimension
-pix2min = 5*35/500; % Change pixel values to physical values in time dimension
+pix2um = 0.167; % Change pixel values to physical values in space dimension
+pix2min = 5; % Change pixel values to physical values in time dimension
 legendArr = {'cell body', 'purse string', 'lamellapodia'};
 
 savestuff = false;
